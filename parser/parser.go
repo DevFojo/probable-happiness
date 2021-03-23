@@ -56,6 +56,8 @@ func (p *Parser) parseStatement() ast.Statement {
 	switch p.currentToken.Type {
 	case token.LET:
 		return p.parseLetStatement()
+	case token.RETURN:
+		return p.parseReturnStatement()
 	default:
 		return nil
 	}
@@ -100,4 +102,16 @@ func (p *Parser) expectPeek(t token.TokenType) bool {
 func (p *Parser) peekError(t token.TokenType) {
 	errorMessage := fmt.Sprintf("expected next token to be %s, got %s instead", t, p.peekToken.Type)
 	p.errors = append(p.errors, errorMessage)
+}
+
+func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
+	statement := &ast.ReturnStatement{Token: p.currentToken}
+
+	p.nextToken()
+
+	for !p.currentTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+
+	return statement
 }
